@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>مراقبة المهمة - تكنولوجيا التربة</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(45deg, #75986f, #9db58e, #b173a3, #ffc2c3);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .navbar {
+            background: white;
+            padding: 16px 24px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 32px;
+            animation: slideDown 0.5s ease-out;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .navbar-brand {
+            font-size: 24px;
+            font-weight: bold;
+            color: #0f4c2f;
+        }
+
+        .navbar-brand span {
+            color: #2d8d54;
+        }
+
+        .navbar-right {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .user-info {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .user-name {
+            font-weight: 600;
+            color: #1a1a1a;
+            font-size: 14px;
+        }
+
+        .user-email {
+            color: #666;
+            font-size: 12px;
+        }
+
+        .logout-btn {
+            padding: 8px 16px;
+            background: #dc2626;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+
+        .logout-btn:hover {
+            background: #b91c1c;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(220, 38, 38, 0.3);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header {
+            margin-bottom: 32px;
+        }
+
+        .header h1 {
+            font-size: 32px;
+            color: #1a1a1a;
+            margin-bottom: 8px;
+        }
+
+        .header p {
+            color: #0a0202;
+            font-size: 16px;
+        }
+
+        .missions-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 24px;
+            animation: fadeIn 0.6s ease-out 0.2s backwards;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .mission-card {
+            background: white;
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border: 2px solid transparent;
+        }
+
+        .mission-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15);
+            border-color: #2d8d54;
+        }
+
+        .mission-icon {
+            font-size: 48px;
+            margin-bottom: 16px;
+        }
+
+        .mission-number {
+            display: inline-block;
+            background: linear-gradient(135deg, #0f4c2f 0%, #2d8d54 100%);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-bottom: 12px;
+        }
+
+        .mission-card h2 {
+            font-size: 20px;
+            color: #1a1a1a;
+            margin-bottom: 10px;
+        }
+
+        .mission-card p {
+            color: #666;
+            font-size: 14px;
+            line-height: 1.6;
+            margin-bottom: 16px;
+        }
+
+        .mission-features {
+            list-style: none;
+            margin-bottom: 16px;
+        }
+
+        .mission-features li {
+            color: #666;
+            font-size: 13px;
+            margin-bottom: 8px;
+            padding-right: 20px;
+            position: relative;
+        }
+
+        .mission-features li::before {
+            content: '✓';
+            position: absolute;
+            right: 0;
+            color: #2d8d54;
+            font-weight: bold;
+        }
+
+        .launch-btn {
+            width: 100%;
+            padding: 10px;
+            background: linear-gradient(135deg, #0f4c2f 0%, #2d8d54 100%);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .launch-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 16px rgba(15, 76, 47, 0.3);
+        }
+
+        .launch-btn:active {
+            transform: translateY(0);
+        }
+
+        .status-badge {
+            display: inline-block;
+            background: #dcfce7;
+            color: #16a34a;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 600;
+            margin-top: 8px;
+        }
+
+        @media (max-width: 768px) {
+            .navbar {
+                flex-direction: column;
+                gap: 16px;
+            }
+
+            .navbar-right {
+                width: 100%;
+                justify-content: space-between;
+            }
+
+            .user-info {
+                align-items: flex-start;
+            }
+
+            .header h1 {
+                font-size: 24px;
+            }
+
+            .missions-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="navbar-brand">🌱 تكنولوجيا <span>التربة</span></div>
+        <div class="navbar-right">
+            <div class="user-info">
+                <div class="user-name" id="userName">المستخدم</div>
+                <div class="user-email" id="userEmail">البريد الإلكتروني</div>
+            </div>
+            <button class="logout-btn" id="logoutBtn">تسجيل الخروج</button>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="header">
+            <h1>مراقبة حالة الارض</h1>
+            <p>اختر كيف تريد لمراقبة وإدارة عمليات الزراعة والتربة الخاصة بك</p>
+        </div>
+
+        <div class="missions-grid">
+            <!-- المهمة 1: مراقبة التربة -->
+            <div class="mission-card" onclick="launchMission('mission1.html')">
+                <div class="mission-icon">🌍</div>
+                
+                <h2>مراقبة التربة</h2>
+                <p>تتبع صحة التربة في الوقت الفعلي وتحليل بيانات المستشعرات</p>
+                <ul class="mission-features">
+                    <li>مستويات الرطوبة المباشرة</li>
+                    <li>تتبع درجة الحرارة</li>
+                    <li>مراقبة توازن الرقم الهيدروجيني</li>
+                    <li>التوصيات الذكية</li>
+                </ul>
+                <div class="status-badge">نشطة</div>
+                <button class="launch-btn">إطلاق </button>
+            </div>
+
+            <!-- المهمة 2: التحكم في المضخة الذكية -->
+            <div class="mission-card" onclick="launchMission('mission2.html')">
+                <div class="mission-icon">💧</div>
+                
+                <h2>التحكم في المضخة الذكية</h2>
+                <p>نظام الري الآلي مع إمكانية التحكم اليدوي</p>
+                <ul class="mission-features">
+                    <li>أوضاع تلقائية/يدوية</li>
+                    <li>حالة المضخة في الوقت الفعلي</li>
+                    <li>تتبع استهلاك المياه</li>
+                    <li>سجل العمليات</li>
+                </ul>
+                <div class="status-badge">نشطة</div>
+                <button class="launch-btn">إطلاق </button>
+            </div>
+
+            <!-- المهمة 3: المراقبة عن بعد -->
+            <div class="mission-card" onclick="launchMission('mission3.html')">
+                <div class="mission-icon">📡</div>
+                
+                <h2>المراقبة عن بعد</h2>
+                <p>مراقبة المزرعة بالكامل في الوقت الفعلي مع نظام التنبيهات</p>
+                <ul class="mission-features">
+                    <li>دمج متعدد المستشعرات</li>
+                    <li>نظام التنبيهات الذكية</li>
+                    <li>حالة الاتصال</li>
+                    <li>سجل التنبيهات</li>
+                </ul>
+                <div class="status-badge">نشطة</div>
+                <button class="launch-btn">إطلاق </button>
+            </div>
+
+            <!-- المهمة 4: متنبئ الري بالذكاء الاصطناعي -->
+            <div class="mission-card" onclick="launchMission('mission4.html')">
+                <div class="mission-icon">🤖</div>
+                
+                <h2>متنبئ الري بالذكاء الاصطناعي</h2>
+                <p>جدولة الري المدعومة بالتعلم الآلي</p>
+                <ul class="mission-features">
+                    <li>التحليلات التنبؤية</li>
+                    <li>التنبؤ لمدة 7 أيام</li>
+                    <li>تحسين استخدام المياه</li>
+                    <li>درجات الثقة</li>
+                </ul>
+                <div class="status-badge">نشطة</div>
+                <button class="launch-btn">إطلاق </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // التحقق من تسجيل دخول المستخدم
+        const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+        if (!currentUser) {
+            window.location.href = 'index.html';
+        }
+
+        // عرض معلومات المستخدم
+        document.getElementById('userName').textContent = currentUser.name;
+        document.getElementById('userEmail').textContent = currentUser.email;
+
+        // معالج تسجيل الخروج
+        document.getElementById('logoutBtn').addEventListener('click', () => {
+            localStorage.removeItem('currentUser');
+            window.location.href = 'index.html';
+        });
+
+        // إطلاق المهمة
+        function launchMission(page) {
+            window.location.href = page;
+        }
+    </script>
+</body>
+</html>

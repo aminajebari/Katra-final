@@ -1,0 +1,763 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>نظام التحكم في مضخة ذكية - الحوسبة الحدية</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(45deg, #75986f, #9db58e, #b173a3, #ffc2c3);
+            min-height: 100vh;
+            padding: 2rem;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            position: relative;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .logo {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            width: 140px;
+            height: 140px;
+            z-index: 1000;
+        }
+
+        .logo img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        .header-icon-title {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 1rem;
+            margin-bottom: 1rem;
+            flex-direction: row-reverse;
+        }
+
+        .header-icon {
+            width: 56px;
+            height: 56px;
+            background: linear-gradient(135deg, #16a34a 0%, #10b981 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            color: #ffffff;
+            font-weight: 700;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .tagline {
+            font-size: 1.125rem;
+            color: #f0f0f0;
+            margin-top: 0.5rem;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Field button styling with brown background for icons */
+        .field-selector {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .field-btn {
+            padding: 0.75rem 1.5rem;
+            border: 2px solid #16a34a;
+            background: rgb(220, 173, 135);
+            border-radius: 0.75rem;
+            cursor: pointer;
+            font-weight: 600;
+            color: white;
+            font-size: 1.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .field-btn:hover {
+            border-color: #10b981;
+            background: rgb(220, 173, 135);
+            color: white;
+            opacity: 0.85;
+        }
+
+        .field-btn:focus {
+            outline: none;
+            border-color: #10b981;
+            box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.2);
+        }
+
+        .field-btn.active {
+            background: rgb(220, 173, 135);
+            color: white;
+            border-color: #16a34a;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        }
+
+        .decision-card {
+            background: white;
+            border-radius: 2rem;
+            padding: 2.5rem;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            margin-bottom: 2rem;
+            border-left: 6px solid #16a34a;
+        }
+
+        .decision-title {
+            font-size: 1.5rem;
+            color: #16a34a;
+            margin-bottom: 1rem;
+            font-weight: 600;
+        }
+
+        .decision-statement {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            transition: color 0.3s ease;
+        }
+
+        .decision-statement.water-now {
+            color: #d32f2f;
+        }
+
+        .decision-statement.water-soon {
+            color: #ff9800;
+        }
+
+        .decision-statement.can-wait {
+            color: #16a34a;
+        }
+
+        .decision-reason {
+            font-size: 1rem;
+            color: #374151;
+            line-height: 1.6;
+        }
+
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .metric-card {
+            background: white;
+            border-radius: 1.5rem;
+            padding: 1.5rem;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.08);
+            border-top: 4px solid;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .metric-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
+        }
+
+        .metric-card.moisture {
+            border-top-color: #16a34a;
+        }
+
+        .metric-card.temperature {
+            border-top-color: #ec4899;
+        }
+
+        .metric-card.humidity {
+            border-top-color: #16a34a;
+        }
+
+        .metric-card.recommendation {
+            border-top-color: #ec4899;
+        }
+
+        .metric-label {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            color: #6b7280;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            letter-spacing: 0.05em;
+        }
+
+        .metric-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #16a34a;
+            margin-bottom: 0.5rem;
+        }
+
+        .metric-status {
+            font-size: 0.875rem;
+            color: #4b5563;
+        }
+
+        .moisture-bar {
+            width: 100%;
+            height: 1rem;
+            background: #e5e7eb;
+            border-radius: 9999px;
+            overflow: hidden;
+            margin-top: 0.75rem;
+        }
+
+        .moisture-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #16a34a, #ec4899);
+            border-radius: 9999px;
+            transition: width 0.5s ease;
+        }
+
+        .controls-section {
+            background: white;
+            border-radius: 1.5rem;
+            padding: 2rem;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.08);
+            margin-bottom: 2rem;
+        }
+
+        .controls-section h2 {
+            font-size: 1.25rem;
+            color: #16a34a;
+            margin-bottom: 1.5rem;
+            font-weight: 700;
+        }
+
+        .controls {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            margin-bottom: 1.5rem;
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 0.75rem;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background-color: #16a34a;
+            color: white;
+        }
+
+        .btn:hover:not(:disabled) {
+            background-color: #10b981;
+            box-shadow: 0 4px 12px rgba(22, 163, 74, 0.3);
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .btn-danger {
+            background-color: #d32f2f;
+        }
+
+        .btn-danger:hover:not(:disabled) {
+            background-color: #b71c1c;
+            box-shadow: 0 4px 12px rgba(211, 47, 47, 0.3);
+        }
+
+        .mode-indicator {
+            padding: 1rem;
+            background-color: #f0f0f0;
+            border-radius: 0.75rem;
+            border-right: 3px solid #16a34a;
+            color: #16a34a;
+            font-weight: 600;
+        }
+
+        .timeline {
+            background: white;
+            border-radius: 1.5rem;
+            padding: 2rem;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.08);
+            margin-bottom: 2rem;
+        }
+
+        .timeline-title {
+            font-size: 1.25rem;
+            color: #16a34a;
+            margin-bottom: 1.5rem;
+            font-weight: 700;
+        }
+
+        .timeline-item {
+            border-left: 3px solid #e5e7eb;
+            padding-left: 1.5rem;
+            padding-bottom: 1.5rem;
+            position: relative;
+        }
+
+        .timeline-item::before {
+            content: '';
+            width: 12px;
+            height: 12px;
+            background: linear-gradient(135deg, #16a34a, #ec4899);
+            border: 3px solid white;
+            border-radius: 50%;
+            position: absolute;
+            left: -9px;
+            top: 0;
+            box-shadow: 0 0 0 2px #e5e7eb;
+        }
+
+        .timeline-item:last-child {
+            border-left-color: transparent;
+        }
+
+        .timeline-time {
+            font-size: 0.875rem;
+            color: #6b7280;
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+
+        .timeline-data {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .timeline-value {
+            font-size: 0.875rem;
+            color: #4b5563;
+        }
+
+        .timeline-value strong {
+            color: #16a34a;
+        }
+
+        .timeline-value span {
+            color: #6b7280;
+        }
+
+        .sensor-section {
+            background: white;
+            border-radius: 1.5rem;
+            padding: 2rem;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.08);
+            margin-bottom: 2rem;
+        }
+
+        .sensor-section h2 {
+            font-size: 1.25rem;
+            color: #16a34a;
+            margin-bottom: 1.5rem;
+            font-weight: 700;
+        }
+
+        .sensor-control {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .sensor-control label {
+            font-weight: 600;
+            color: #4b5563;
+        }
+
+        .slider {
+            flex: 1;
+            min-width: 200px;
+            height: 6px;
+            border-radius: 3px;
+            background: linear-gradient(90deg, #d32f2f, #ff9800, #16a34a);
+            outline: none;
+            -webkit-appearance: none;
+            appearance: none;
+        }
+
+        .slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: white;
+            cursor: pointer;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+        }
+
+        .slider::-moz-range-thumb {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: white;
+            cursor: pointer;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+            border: none;
+        }
+
+        #humidityDisplay {
+            font-weight: 600;
+            color: #16a34a;
+            min-width: 50px;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 2rem;
+            color: #6b7280;
+        }
+
+        .spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid #e5e7eb;
+            border-top-color: #16a34a;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-left: 0.75rem;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 1.75rem;
+            }
+
+            .metrics-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .controls {
+                flex-direction: column;
+            }
+
+            .btn {
+                width: 100%;
+            }
+
+            .sensor-control {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .slider {
+                width: 100%;
+            }
+
+            .logo {
+                width: 100px;
+                height: 100px;
+                top: 10px;
+                right: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="logo">
+                <img src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/572656620_1558505082244196_4996587719208416714_n-0uaay9miKSYTRIphgiwoKOkkkU8ky4.png" alt="لوجو النظام">
+            </div>
+
+            <div class="header-icon-title">
+                <h1>نظام التحكم في مضخة ذكية</h1>
+                <div class="header-icon">💧</div>
+            </div>
+            <p class="tagline">إدارة الري بالحوسبة الحدية</p>
+        </header>
+
+        <div class="field-selector" id="fieldSelector"></div>
+
+        <div class="decision-card">
+            <div class="decision-title">الحالة الحالية:</div>
+            <div class="decision-statement" id="decisionStatement">جاري التحميل...</div>
+            <div class="decision-reason" id="decisionReason">جاري تحليل حالة النظام...</div>
+        </div>
+
+        <div class="metrics-grid">
+            <div class="metric-card moisture">
+                <div class="metric-label">رطوبة التربة</div>
+                <div class="metric-value" id="moistureValue">--%</div>
+                <div class="moisture-bar">
+                    <div class="moisture-fill" id="moistureFill"></div>
+                </div>
+                <div class="metric-status" id="moistureStatus">جاري التحميل...</div>
+            </div>
+
+            <div class="metric-card temperature">
+                <div class="metric-label">حالة المضخة</div>
+                <div class="metric-value" id="temperatureValue">--</div>
+                <div class="metric-status" id="temperatureStatus">جاري التحميل...</div>
+            </div>
+
+            <div class="metric-card humidity">
+                <div class="metric-label">إجمالي الماء</div>
+                <div class="metric-value" id="humidityValue">0</div>
+                <div class="metric-status" id="humidityStatus">لتر</div>
+            </div>
+
+            <div class="metric-card recommendation">
+                <div class="metric-label">الوضع</div>
+                <div class="metric-value" id="recommendationValue" style="font-size: 1.5rem;">-</div>
+                <div class="metric-status" id="recommendationStatus">جاري التحميل...</div>
+            </div>
+        </div>
+
+        <div class="controls-section">
+            <h2>التحكم في المضخة</h2>
+            <div class="controls">
+                <button class="btn" id="startBtn" onclick="startPump()">▶ تشغيل المضخة</button>
+                <button class="btn btn-danger" id="stopBtn" onclick="stopPump()" disabled>■ إيقاف المضخة</button>
+                <button class="btn" id="autoBtn" onclick="toggleAutoMode()">⚙ الوضع اليدوي</button>
+            </div>
+            <div class="mode-indicator">
+                <span id="modeLabel">الوضع: يدوي</span>
+            </div>
+        </div>
+
+        <div class="sensor-section">
+            <h2>محاكاة مستشعر الرطوبة</h2>
+            <div class="sensor-control">
+                <label for="humidityInput">الرطوبة (0-100%):</label>
+                <input 
+                    type="range" 
+                    id="humidityInput" 
+                    min="0" 
+                    max="100" 
+                    value="50"
+                    oninput="updateHumidity(this.value)"
+                    class="slider"
+                >
+                <span id="humidityDisplay">50%</span>
+            </div>
+            <button class="btn" onclick="runEdgeAnalysis()" style="margin-top: 1rem;">تحليل الحوسبة الحدية</button>
+        </div>
+
+        <div class="timeline">
+            <div class="timeline-title">سجل التشغيل</div>
+            <div id="timelineContainer" class="loading">
+                <div class="spinner"></div> جاري تحميل السجل...
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const state = {
+            pumpRunning: false,
+            autoMode: false,
+            humidity: 50,
+            totalWater: 0,
+            history: [],
+            edgeAnalysisActive: false,
+            selectedField: null,
+        }
+
+        document.addEventListener("DOMContentLoaded", () => {
+            initFieldSelector()
+            updateHumidity(50)
+            logHistory("تم تهيئة النظام")
+        })
+
+        
+
+        function selectField(btn, fieldName) {
+            const buttons = document.querySelectorAll('.field-btn')
+            buttons.forEach(b => b.classList.remove('active'))
+            btn.classList.add('active')
+            state.selectedField = fieldName
+            logHistory(`تم اختيار الحقل: ${fieldName}`)
+        }
+
+        function updateHumidity(value) {
+            state.humidity = Number.parseInt(value)
+            document.getElementById("moistureValue").textContent = state.humidity + "%"
+            document.getElementById("humidityDisplay").textContent = state.humidity + "%"
+            document.getElementById("moistureFill").style.width = state.humidity + "%"
+
+            if (state.autoMode) {
+                runEdgeAnalysis()
+            }
+        }
+
+        function startPump() {
+            if (!state.pumpRunning) {
+                state.pumpRunning = true
+                updatePumpUI()
+                logHistory("تم تشغيل المضخة (" + (state.autoMode ? "الوضع الآلي" : "الوضع اليدوي") + ")")
+                addWaterUsage()
+            }
+        }
+
+        function stopPump() {
+            if (state.pumpRunning) {
+                state.pumpRunning = false
+                updatePumpUI()
+                logHistory("تم إيقاف المضخة")
+            }
+        }
+
+        function toggleAutoMode() {
+            state.autoMode = !state.autoMode
+            updatePumpUI()
+
+            if (state.autoMode) {
+                logHistory("تم تفعيل الوضع الآلي")
+                runEdgeAnalysis()
+            } else {
+                if (state.pumpRunning) {
+                    stopPump()
+                }
+                logHistory("تم تفعيل الوضع اليدوي")
+            }
+        }
+
+        function updatePumpUI() {
+            const startBtn = document.getElementById("startBtn")
+            const stopBtn = document.getElementById("stopBtn")
+            const autoBtn = document.getElementById("autoBtn")
+            const decisionStatement = document.getElementById("decisionStatement")
+            const decisionReason = document.getElementById("decisionReason")
+            const modeLabel = document.getElementById("modeLabel")
+            const tempValue = document.getElementById("temperatureValue")
+            const recValue = document.getElementById("recommendationValue")
+            const recStatus = document.getElementById("recommendationStatus")
+
+            startBtn.disabled = state.pumpRunning
+            stopBtn.disabled = !state.pumpRunning
+
+            if (state.pumpRunning) {
+                decisionStatement.textContent = "المضخة تعمل"
+                decisionStatement.className = "decision-statement water-now"
+                tempValue.textContent = "تعمل"
+                recValue.textContent = "🟢"
+            } else {
+                decisionStatement.textContent = "المضخة متوقفة"
+                decisionStatement.className = "decision-statement can-wait"
+                tempValue.textContent = "متوقفة"
+                recValue.textContent = "🔴"
+            }
+
+            if (state.autoMode) {
+                autoBtn.textContent = "⚙ الوضع الآلي"
+                modeLabel.textContent = "الوضع: آلي (الحوسبة الحدية نشطة)"
+            } else {
+                autoBtn.textContent = "⚙ الوضع اليدوي"
+                modeLabel.textContent = "الوضع: يدوي"
+            }
+        }
+
+        function runEdgeAnalysis() {
+            state.edgeAnalysisActive = true
+            const humidity = state.humidity
+            let decision = ""
+            let shouldWater = false
+
+            if (humidity < 30) {
+                decision = "حرج - الري فوراً"
+                shouldWater = true
+            } else if (humidity < 40) {
+                decision = "عالي - الري قريباً"
+                shouldWater = true
+            } else if (humidity >= 50 && humidity <= 70) {
+                decision = "مثالي - لا حاجة للري"
+                shouldWater = false
+            } else if (humidity > 85) {
+                decision = "حرج - إيقاف الري"
+                shouldWater = false
+            } else {
+                decision = "جيد - يمكن الري"
+                shouldWater = false
+            }
+
+            const decisionReason = document.getElementById("decisionReason")
+            decisionReason.textContent = decision
+
+            if (state.autoMode) {
+                if (shouldWater && !state.pumpRunning) {
+                    startPump()
+                } else if (!shouldWater && state.pumpRunning && humidity > 50) {
+                    stopPump()
+                }
+            }
+
+            logHistory("تحليل الحوسبة الحدية: " + decision)
+            state.edgeAnalysisActive = false
+        }
+
+        function addWaterUsage() {
+            if (state.pumpRunning) {
+                state.totalWater += 0.5
+                document.getElementById("humidityValue").textContent = state.totalWater.toFixed(1)
+            }
+        }
+
+        function logHistory(message) {
+            const now = new Date()
+            const timeStr = now.toLocaleTimeString('ar-SA')
+
+            state.history.unshift({
+                time: timeStr,
+                message: message,
+            })
+
+            if (state.history.length > 20) {
+                state.history.pop()
+            }
+
+            updateHistoryUI()
+        }
+
+        function updateHistoryUI() {
+            const historyList = document.getElementById("timelineContainer")
+            historyList.innerHTML = state.history
+                .map((entry) => `
+                    <div class="timeline-item">
+                        <div class="timeline-time">${entry.time}</div>
+                        <div class="timeline-data">
+                            <div class="timeline-value">${entry.message}</div>
+                        </div>
+                    </div>
+                `)
+                .join("")
+        }
+
+        setInterval(() => {
+            if (state.pumpRunning) {
+                addWaterUsage()
+            }
+        }, 1000)
+    </script>
+</body>
+</html>

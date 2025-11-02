@@ -1,0 +1,924 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>المهمة 4 - مبروكة المتنبئة</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #f5e6ff 0%, #ffe6f0 50%, #ffe6cc 100%);
+      min-height: 100vh;
+      padding: 20px;
+      direction: rtl;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    /* Header */
+    .header {
+      text-align: center;
+      margin-bottom: 40px;
+    }
+
+    .header-title {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 15px;
+      margin-bottom: 20px;
+    }
+
+    .header-title h1 {
+      font-size: 3em;
+      color: #333;
+      font-weight: bold;
+    }
+
+    .header-subtitle {
+      font-size: 1.8em;
+      color: #6b4c9a;
+      font-weight: bold;
+      margin-bottom: 10px;
+    }
+
+    .header-quote {
+      font-size: 1.2em;
+      color: #666;
+      font-style: italic;
+    }
+
+    /* Loading */
+    .loading {
+      text-align: center;
+      padding: 60px 20px;
+      display: none;
+    }
+
+    .loading.active {
+      display: block;
+    }
+
+    .brain-icon {
+      font-size: 80px;
+      animation: pulse 2s infinite;
+      margin-bottom: 20px;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.5; }
+    }
+
+    .loading-text {
+      font-size: 1.2em;
+      color: #6b4c9a;
+      margin-top: 20px;
+    }
+
+    /* Content */
+    .content {
+      display: none;
+    }
+
+    .content.active {
+      display: block;
+    }
+
+    /* AI Intro Card */
+    .ai-intro {
+      background: linear-gradient(135deg, #8b5cf6 0%, #ec4899 50%, #8b5cf6 100%);
+      border-radius: 20px;
+      padding: 30px;
+      color: white;
+      margin-bottom: 30px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    }
+
+    .ai-intro h3 {
+      font-size: 1.8em;
+      margin-bottom: 15px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .ai-intro p {
+      font-size: 1.1em;
+      line-height: 1.6;
+      opacity: 0.95;
+    }
+
+    /* Today's Prediction */
+    .prediction-today {
+      background: white;
+      border-radius: 20px;
+      padding: 30px;
+      margin-bottom: 30px;
+      box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+    }
+
+    .section-title {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 1.5em;
+      font-weight: bold;
+      color: #333;
+      margin-bottom: 25px;
+    }
+
+    .prediction-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 25px;
+      margin-bottom: 20px;
+    }
+
+    @media (max-width: 768px) {
+      .prediction-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .recommendation-card {
+      border-radius: 15px;
+      padding: 25px;
+      color: white;
+      min-height: 300px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .recommendation-card.water {
+      background: linear-gradient(135deg, #0ea5e9 0%, #06b6d4 100%);
+    }
+
+    .recommendation-card.no-water {
+      background: linear-gradient(135deg, #22c55e 0%, #10b981 100%);
+    }
+
+    .emoji-large {
+      font-size: 4em;
+      margin-bottom: 15px;
+    }
+
+    .recommendation-title {
+      font-size: 2em;
+      font-weight: bold;
+      margin-bottom: 15px;
+    }
+
+    .recommendation-reasoning {
+      font-size: 1.1em;
+      margin-bottom: 15px;
+      opacity: 0.9;
+    }
+
+    .best-time-box {
+      background: rgba(255,255,255,0.2);
+      backdrop-filter: blur(10px);
+      border-radius: 10px;
+      padding: 15px;
+    }
+
+    .best-time-label {
+      font-size: 0.9em;
+      font-weight: bold;
+      margin-bottom: 5px;
+      opacity: 0.9;
+    }
+
+    .best-time-value {
+      font-size: 2em;
+      font-weight: bold;
+    }
+
+    /* Stats Grid */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 15px;
+    }
+
+    @media (max-width: 768px) {
+      .stats-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .stat-box {
+      border-radius: 12px;
+      padding: 20px;
+      border: 2px solid;
+    }
+
+    .stat-box.confidence {
+      background: #f0e6ff;
+      border-color: #9333ea;
+    }
+
+    .stat-box.factors {
+      background: #f3f4f6;
+      border-color: #d1d5db;
+    }
+
+    .stat-label {
+      font-size: 0.85em;
+      font-weight: bold;
+      text-transform: uppercase;
+      margin-bottom: 10px;
+      opacity: 0.7;
+    }
+
+    .stat-value {
+      font-size: 2.5em;
+      font-weight: bold;
+      color: #6b4c9a;
+      margin-bottom: 10px;
+    }
+
+    .progress-bar {
+      background: #e9d5ff;
+      border-radius: 10px;
+      height: 10px;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      background: linear-gradient(90deg, #9333ea, #ec4899);
+      height: 100%;
+      transition: width 0.5s ease;
+    }
+
+    .factors-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .factor-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 8px 0;
+    }
+
+    .factor-name {
+      font-size: 0.95em;
+      color: #666;
+    }
+
+    .factor-value {
+      font-weight: bold;
+      color: #333;
+    }
+
+    /* Weekly Plan */
+    .weekly-plan {
+      background: white;
+      border-radius: 20px;
+      padding: 30px;
+      margin-bottom: 30px;
+      box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+    }
+
+    .days-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+      gap: 15px;
+    }
+
+    .day-card {
+      border-radius: 12px;
+      padding: 15px;
+      text-align: center;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      cursor: pointer;
+    }
+
+    .day-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+    }
+
+    .day-card.water {
+      background: linear-gradient(135deg, #0ea5e9 0%, #06b6d4 100%);
+      color: white;
+    }
+
+    .day-card.no-water {
+      background: #f3f4f6;
+      color: #333;
+      border: 2px solid #d1d5db;
+    }
+
+    .day-name {
+      font-weight: bold;
+      font-size: 1.1em;
+      margin-bottom: 8px;
+    }
+
+    .day-weather {
+      font-size: 2.5em;
+      margin-bottom: 8px;
+    }
+
+    .day-temp {
+      font-size: 0.9em;
+      opacity: 0.8;
+      margin-bottom: 8px;
+    }
+
+    .day-action {
+      font-size: 0.85em;
+      font-weight: bold;
+      background: rgba(255,255,255,0.2);
+      padding: 5px 10px;
+      border-radius: 20px;
+      display: inline-block;
+    }
+
+    .day-time {
+      font-size: 0.75em;
+      margin-top: 5px;
+      opacity: 0.7;
+    }
+
+    /* Optimization */
+    .optimization {
+      background: white;
+      border-radius: 20px;
+      padding: 30px;
+      margin-bottom: 30px;
+      box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+    }
+
+    .optimization-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 20px;
+    }
+
+    .optimization-card {
+      border-radius: 12px;
+      padding: 25px;
+      text-align: center;
+      color: white;
+    }
+
+    .optimization-card.current {
+      background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+    }
+
+    .optimization-card.optimized {
+      background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+    }
+
+    .optimization-card.savings {
+      background: linear-gradient(135deg, #8b5cf6 0%, #ec4899 100%);
+    }
+
+    .opt-label {
+      font-size: 0.85em;
+      font-weight: bold;
+      margin-bottom: 10px;
+      opacity: 0.9;
+    }
+
+    .opt-value {
+      font-size: 2.2em;
+      font-weight: bold;
+      margin-bottom: 5px;
+    }
+
+    .opt-detail {
+      font-size: 0.85em;
+      opacity: 0.85;
+    }
+
+    /* Advice */
+    .advice {
+      background: linear-gradient(135deg, #dcfce7 0%, #ecfdf5 100%);
+      border: 2px solid #22c55e;
+      border-radius: 20px;
+      padding: 25px;
+      margin-bottom: 30px;
+      display: flex;
+      gap: 20px;
+    }
+
+    .advice-emoji {
+      font-size: 3em;
+      flex-shrink: 0;
+    }
+
+    .advice-content h4 {
+      font-size: 1.3em;
+      color: #15803d;
+      margin-bottom: 10px;
+      font-weight: bold;
+    }
+
+    .advice-text {
+      font-size: 1.05em;
+      color: #166534;
+      line-height: 1.6;
+    }
+
+    /* ML Info */
+    .ml-info {
+      text-align: center;
+      margin-top: 30px;
+      padding: 20px;
+      background: white;
+      border-radius: 50px;
+      display: inline-flex;
+      align-items: center;
+      gap: 15px;
+      box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+      margin-right: 50%;
+      transform: translateX(50%);
+    }
+
+    .ml-info-icon {
+      font-size: 1.5em;
+      color: #8b5cf6;
+    }
+
+    .ml-info-content {
+      text-align: right;
+    }
+
+    .ml-info-label {
+      font-size: 0.75em;
+      color: #999;
+    }
+
+    .ml-info-title {
+      font-size: 0.95em;
+      font-weight: bold;
+      color: #333;
+    }
+
+    /* Cloud Status */
+    .cloud-status {
+      position: fixed;
+      top: 20px;
+      left: 20px;
+      background: white;
+      padding: 12px 20px;
+      border-radius: 25px;
+      box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: bold;
+      font-size: 0.9em;
+    }
+
+    .cloud-status.connected {
+      background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+      color: white;
+    }
+
+    .cloud-status.disconnected {
+      background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+      color: white;
+    }
+
+    .status-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: currentColor;
+      animation: blink 1s infinite;
+    }
+
+    @keyframes blink {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.5; }
+    }
+  </style>
+</head>
+<body>
+  <!-- Cloud Status -->
+  <div class="cloud-status disconnected" id="cloudStatus">
+    <span class="status-dot"></span>
+    <span id="statusText">جاري الاتصال...</span>
+  </div>
+
+  <!-- Container -->
+  <div class="container">
+    <!-- Header -->
+    <div class="header">
+      <div class="header-title">
+        <span style="font-size: 3em;">🧠</span>
+        
+      </div>
+      <div class="header-subtitle">مبروكة</div>
+      <div class="header-quote">"غدًا سيمطر. هل أسقي اليوم؟ همم..."</div>
+    </div>
+
+    <!-- Loading State -->
+    <div class="loading active" id="loading">
+      <div class="brain-icon">🧠</div>
+      <p class="loading-text">الذكاء الاصطناعي يحلل بياناتك...</p>
+    </div>
+
+    <!-- Content -->
+    <div class="content" id="content">
+      <!-- AI Introduction -->
+      <div class="ai-intro">
+        <h3>🔮 مبروكة المحظوظة</h3>
+        <p>
+          يقوم الذكاء الاصطناعي بتحليل تربتك والطقس وسجل الري
+          للتنبؤ بأفضل وقت للري وتحسين استهلاك المياه.
+        </p>
+      </div>
+
+      <!-- Today's Prediction -->
+      <div class="prediction-today">
+        <div class="section-title">
+          <span>✨</span>
+          <span>توقعات اليوم</span>
+        </div>
+
+        <div class="prediction-grid">
+          <!-- Recommendation -->
+          <div class="recommendation-card" id="recommendationCard">
+            <div>
+              <div class="emoji-large" id="recommendationEmoji">💧</div>
+              <div class="recommendation-title" id="recommendationTitle">السقي اليوم</div>
+              <div class="recommendation-reasoning" id="recommendationReasoning">
+                جاري التحليل...
+              </div>
+            </div>
+            <div class="best-time-box" id="bestTimeBox" style="display:none;">
+              <div class="best-time-label">أفضل وقت</div>
+              <div class="best-time-value">⏰ <span id="bestTime">18:00</span></div>
+            </div>
+          </div>
+
+          <!-- Stats -->
+          <div>
+            <!-- Confidence -->
+            <div class="stat-box confidence">
+              <div class="stat-label">ثقة الذكاء الاصطناعي</div>
+              <div class="stat-value" id="confidenceValue">75%</div>
+              <div class="progress-bar">
+                <div class="progress-fill" id="confidenceFill" style="width: 75%;"></div>
+              </div>
+            </div>
+
+            <!-- Factors -->
+            <div class="stat-box factors" style="margin-top: 15px;">
+              <div class="stat-label">العوامل المحللة</div>
+              <div class="factors-list" id="factorsList">
+                <div class="factor-item">
+                  <span class="factor-name">💧 رطوبة التربة</span>
+                  <span class="factor-value" id="soilMoisture">--</span>
+                </div>
+                <div class="factor-item">
+                  <span class="factor-name">🌡️ درجة الحرارة</span>
+                  <span class="factor-value" id="temperature">--</span>
+                </div>
+                <div class="factor-item">
+                  <span class="factor-name">🌧️ الأمطار المتوقعة</span>
+                  <span class="factor-value" id="rainfall">--</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Weekly Plan -->
+      <div class="weekly-plan">
+        <div class="section-title">
+          <span>📅</span>
+          <span>الجدول الذكي للأسبوع</span>
+        </div>
+        <div class="days-grid" id="daysGrid">
+          <!-- Generated by JS -->
+        </div>
+      </div>
+
+      <!-- Optimization -->
+      <div class="optimization">
+        <div class="section-title">
+          <span>📈</span>
+          <span>تحسين استهلاك المياه</span>
+        </div>
+        <div class="optimization-grid">
+          <div class="optimization-card current">
+            <div class="opt-label">الاستهلاك الحالي</div>
+            <div class="opt-value" id="currentUsage">200 لتر</div>
+            <div class="opt-detail">في الأسبوع</div>
+          </div>
+          <div class="optimization-card optimized">
+            <div class="opt-label">الاستهلاك الأمثل</div>
+            <div class="opt-value" id="optimizedUsage">150 لتر</div>
+            <div class="opt-detail">مع الذكاء الاصطناعي</div>
+          </div>
+          <div class="optimization-card savings">
+            <div class="opt-label">الوفورات</div>
+            <div class="opt-value" id="savingsPercent">25%</div>
+            <div class="opt-detail" id="savingsDetail">= 50 لتر موفرة</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Advice -->
+      <div class="advice">
+        <div class="advice-emoji">💡</div>
+        <div class="advice-content">
+          <h4>نصيحة الذكاء الاصطناعي</h4>
+          <div class="advice-text" id="adviceText">
+            جاري التحليل...
+          </div>
+        </div>
+      </div>
+
+      <!-- ML Info -->
+      <div style="text-align: center;">
+        <div class="ml-info">
+          <div class="ml-info-icon">🧠</div>
+          <div class="ml-info-content">
+            <div class="ml-info-label">نموذج التعلم الآلي v1.0</div>
+            <div class="ml-info-title" id="mlInfo">
+              بناءً على تحليل البيانات
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const API_URL = 'http://localhost:5000';
+    const SUPABASE_URL = 'YOUR_SUPABASE_URL';
+    const SUPABASE_KEY = 'YOUR_SUPABASE_ANON_KEY';
+
+    let currentPrediction = null;
+
+    async function initializePredictions() {
+      try {
+        await checkCloudConnection();
+
+        const sensorData = {
+          soil_moisture: 35 + Math.random() * 30,
+          temperature: 28 + Math.random() * 8,
+          humidity: 50 + Math.random() * 30,
+          rainfall_forecast: Math.random() * 100
+        };
+
+        displayMockData();
+
+        try {
+          const dailyRes = await fetch(`${API_URL}/api/prediction/daily`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(sensorData),
+            timeout: 2000
+          }).then(r => r.json());
+
+          if (dailyRes) {
+            displayTodayPrediction(dailyRes);
+            currentPrediction = dailyRes;
+          }
+        } catch (backendError) {
+          console.log('الخادم غير متاح، استخدام البيانات التجريبية');
+        }
+
+        const weeklyData = generateWeeklyPredictions();
+        displayWeeklyPlan(weeklyData);
+
+        const optimization = calculateOptimization(weeklyData);
+        displayOptimization(optimization);
+
+        await saveToPredictionHistory(sensorData, currentPrediction || {});
+
+        document.getElementById('loading').classList.remove('active');
+        document.getElementById('content').classList.add('active');
+
+      } catch (error) {
+        console.log('خطأ:', error);
+        displayMockData();
+        document.getElementById('loading').classList.remove('active');
+        document.getElementById('content').classList.add('active');
+      }
+    }
+
+    function generateWeeklyPredictions() {
+      const days = ['الاثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت', 'الأحد'];
+      const weatherPatterns = ['sunny', 'cloudy', 'rainy', 'partly_cloudy'];
+      
+      return days.map((day, idx) => {
+        const temp = 20 + Math.random() * 15;
+        const rainfall = Math.random() * 100;
+        const soilMoisture = 25 + Math.random() * 50;
+        
+        const shouldWater = soilMoisture < 40 && rainfall < 50;
+        
+        return {
+          day,
+          shouldWater,
+          confidence: Math.floor(75 + Math.random() * 20),
+          weather: weatherPatterns[Math.floor(Math.random() * weatherPatterns.length)],
+          temperature: Math.floor(temp),
+          rainfall: Math.floor(rainfall),
+          soil_moisture: Math.floor(soilMoisture),
+          bestTime: '18:00'
+        };
+      });
+    }
+
+    function calculateOptimization(weeklyData) {
+      const wateringDays = weeklyData.filter(d => d.shouldWater).length;
+      const currentUsage = 200;
+      const optimizedUsage = currentUsage * (1 - (wateringDays * 0.08));
+      const savings = currentUsage - optimizedUsage;
+      
+      return {
+        currentUsage: Math.round(currentUsage),
+        optimizedUsage: Math.round(optimizedUsage),
+        savingsPercentage: Math.round((savings / currentUsage) * 100),
+        savingsLiters: Math.round(savings)
+      };
+    }
+
+    function displayTodayPrediction(data) {
+      const card = document.getElementById('recommendationCard');
+      const emoji = document.getElementById('recommendationEmoji');
+      const title = document.getElementById('recommendationTitle');
+      const reasoning = document.getElementById('recommendationReasoning');
+      const bestTimeBox = document.getElementById('bestTimeBox');
+      const bestTime = document.getElementById('bestTime');
+
+      if (data.shouldWater) {
+        card.classList.add('water');
+        card.classList.remove('no-water');
+        emoji.textContent = '💧';
+        title.textContent = 'السقي اليوم';
+        bestTime.textContent = data.bestTime || '18:00';
+        bestTimeBox.style.display = 'block';
+      } else {
+        card.classList.add('no-water');
+        card.classList.remove('water');
+        emoji.textContent = '🐔';
+        title.textContent = 'بدون سقي';
+        bestTimeBox.style.display = 'none';
+      }
+
+      const reason = data.reasoning || data.reason || 'التحليل الكامل جارٍ...';
+      reasoning.textContent = reason;
+
+      const soilMoist = Math.round(data.soil_moisture || 35);
+      const temp = Math.round(data.temperature || 28);
+      const rain = Math.round(data.rainfall_forecast || 15);
+
+      document.getElementById('soilMoisture').textContent = soilMoist + '%';
+      document.getElementById('temperature').textContent = temp + '°C';
+      document.getElementById('rainfall').textContent = rain + '%';
+
+      const confidence = data.confidence || 75;
+      document.getElementById('confidenceValue').textContent = confidence + '%';
+      document.getElementById('confidenceFill').style.width = confidence + '%';
+
+      updateAdvice(data);
+    }
+
+    function displayWeeklyPlan(data) {
+      const daysGrid = document.getElementById('daysGrid');
+      daysGrid.innerHTML = '';
+
+      data.forEach((day) => {
+        const card = document.createElement('div');
+        card.className = `day-card ${day.shouldWater ? 'water' : 'no-water'}`;
+
+        const weatherEmojis = {
+          'sunny': '☀️',
+          'cloudy': '☁️',
+          'rainy': '🌧️',
+          'partly_cloudy': '⛅'
+        };
+        const weather = weatherEmojis[day.weather] || '🌤️';
+
+        card.innerHTML = `
+          <div class="day-name">${day.day}</div>
+          <div class="day-weather">${weather}</div>
+          <div class="day-temp">${day.temperature}°م</div>
+          <div class="day-action">${day.shouldWater ? '💧 سقي' : '✋ راحة'}</div>
+          ${day.shouldWater ? `<div class="day-time">⏰ ${day.bestTime}</div>` : ''}
+        `;
+
+        daysGrid.appendChild(card);
+      });
+
+      const wateringDays = data.filter(d => d.shouldWater).length;
+      document.getElementById('mlInfo').textContent = `بناءً على ${wateringDays} أيام سقي موصى بها`;
+    }
+
+    function displayOptimization(data) {
+      document.getElementById('currentUsage').textContent = data.currentUsage + ' لتر';
+      document.getElementById('optimizedUsage').textContent = data.optimizedUsage + ' لتر';
+      document.getElementById('savingsPercent').textContent = data.savingsPercentage + '%';
+      document.getElementById('savingsDetail').textContent = `= ${data.savingsLiters} لتر موفرة`;
+    }
+
+    function updateAdvice(prediction) {
+      let advice = '';
+      const soilMoisture = Math.round(prediction.soil_moisture || 35);
+      const rainfall = Math.round(prediction.rainfall_forecast || 15);
+      
+      if (prediction.shouldWater) {
+        advice = `مرحبًا مبروكة، <strong>اسقي هذا المساء في الساعة ${prediction.bestTime || '18:00'}</strong>! طماطمك ستشكرك. التربة عند ${soilMoisture}% رطوبة. 🍅`;
+      } else if (rainfall > 60) {
+        advice = `مبروكة، <strong>دعي المطر يقوم بالعمل</strong>! ☔ سيوفر ${rainfall}% رطوبة. اذهبي لشرب الشاي عند الجارة! 🍵`;
+      } else {
+        advice = `كل شيء على ما يرام! التربة سعيدة عند ${soilMoisture}% رطوبة. اذهبي لرعاية دجاجك! 🐔`;
+      }
+      document.getElementById('adviceText').innerHTML = advice;
+    }
+
+    async function checkCloudConnection() {
+      try {
+        const response = await fetch(SUPABASE_URL + '/rest/v1/', {
+          headers: {
+            'apikey': SUPABASE_KEY,
+          }
+        }).catch(() => ({ ok: false }));
+        
+        if (response.ok) {
+          document.getElementById('cloudStatus').classList.add('connected');
+          document.getElementById('cloudStatus').classList.remove('disconnected');
+          document.getElementById('statusText').textContent = 'متصل ✓';
+        }
+      } catch (error) {
+        console.log('فشل فحص الاتصال بالسحابة');
+      }
+    }
+
+    async function saveToPredictionHistory(sensorData, prediction) {
+      try {
+        if (!SUPABASE_URL.includes('YOUR_')) {
+          const response = await fetch(`${SUPABASE_URL}/rest/v1/predictions`, {
+            method: 'POST',
+            headers: {
+              'apikey': SUPABASE_KEY,
+              'Content-Type': 'application/json',
+              'Prefer': 'return=minimal'
+            },
+            body: JSON.stringify({
+              soil_moisture: sensorData.soil_moisture,
+              temperature: sensorData.temperature,
+              humidity: sensorData.humidity,
+              rainfall_forecast: sensorData.rainfall_forecast,
+              prediction: prediction.shouldWater ? 'water' : 'no-water',
+              confidence: prediction.confidence || 75,
+              created_at: new Date().toISOString()
+            })
+          });
+          console.log('تم حفظ التوقع في السحابة');
+        }
+      } catch (error) {
+        console.log('تعذر الحفظ في السحابة:', error.message);
+      }
+    }
+
+    function displayMockData() {
+      displayTodayPrediction({
+        shouldWater: true,
+        confidence: 85,
+        bestTime: '18:00',
+        reason: 'التربة جافة (35%). درجة حرارة مرتفعة (32°م). أمطار قليلة متوقعة (15%).',
+        soil_moisture: 35,
+        temperature: 32,
+        rainfall_forecast: 15
+      });
+
+      const weeklyData = generateWeeklyPredictions();
+      displayWeeklyPlan(weeklyData);
+      
+      const optimization = calculateOptimization(weeklyData);
+      displayOptimization(optimization);
+    }
+
+    // Initialize when page loads
+    window.addEventListener('load', () => {
+      setTimeout(initializePredictions, 1500);
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>المهمة 3 - المراقبة عن بُعد</title>
+    <style>
+        * {margin: 0; padding: 0; box-sizing: border-box;}
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(45deg, #75986f, #9db58e, #b173a3, #ffc2c3);
+            min-height: 100vh;
+            padding: 1rem;
+            direction: rtl;
+        }
+        .container {max-width: 1400px; margin: 0 auto;}
+        .header {text-align: center; margin-bottom: 2rem;}
+        .header-title {display: flex; align-items: center; justify-content: center; gap: 1rem; margin-bottom: 1rem;}
+        .header-title h1 {font-size: 3rem; color: #1e293b; font-weight: bold;}
+        .cloud-icon {width: 3rem; height: 3rem; color: #0369a1;}
+        .header h2 {font-size: 1.875rem; font-weight: bold; color: #334155; margin-bottom: 0.5rem;}
+        .header p {font-size: 1.125rem; color: #64748b;}
+        .header-status {display: flex; align-items: center; gap: 0.5rem; justify-content: center; margin-top: 1rem; font-size: 0.9rem;}
+        .status-dot {width: 0.75rem; height: 0.75rem; border-radius: 50%; animation: pulse 2s infinite;}
+        .status-dot.online {background: #22c55e;}
+        .status-dot.offline {background: #ef4444;}
+        @keyframes pulse {0%, 100% {opacity: 1;} 50% {opacity: 0.5;}}
+        
+        .connection-card {
+            background: white;
+            border-radius: 1rem;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .connection-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+        .connection-text h3 {font-size: 1.5rem; color: #1e293b; margin-bottom: 0.5rem;}
+        .connection-text p {color: #64748b;}
+        .connection-status {display: flex; align-items: center; gap: 1rem;}
+        .wifi-icon {width: 3rem; height: 3rem; color: #22c55e;}
+        .status-text {text-align: center; font-weight: bold; color: #1e293b;}
+        
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        .metric-card {
+            background: white;
+            border-radius: 1rem;
+            padding: 1.5rem;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            transition: transform 0.2s;
+        }
+        .metric-card:hover {transform: translateY(-4px);}
+        .metric-header {display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;}
+        .metric-label {font-weight: bold; color: #64748b; font-size: 0.9rem;}
+        .metric-icon {width: 2rem; height: 2rem; opacity: 0.7;}
+        .metric-value {font-size: 2.5rem; font-weight: bold; margin-bottom: 0.5rem;}
+        .metric-status {font-size: 0.9rem; opacity: 0.8;}
+        
+        .moisture .metric-icon {color: #0ea5e9;}
+        .moisture .metric-value {color: #0ea5e9;}
+        .pump .metric-icon {color: #f59e0b;}
+        .pump .metric-value {color: #f59e0b;}
+        .tank .metric-icon {color: #06b6d4;}
+        .tank .metric-value {color: #06b6d4;}
+        .temperature .metric-value {color: #ef4444;}
+        
+        .progress-bar {
+            width: 100%;
+            height: 0.5rem;
+            background: #e2e8f0;
+            border-radius: 1rem;
+            overflow: hidden;
+            margin-top: 1rem;
+        }
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #06b6d4, #0ea5e9);
+            transition: width 0.3s;
+        }
+        
+        .location-card {
+            background: white;
+            border-radius: 1rem;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+            flex-wrap: wrap;
+        }
+        .location-icon svg {width: 4rem; height: 4rem; color: #8b5cf6;}
+        .location-info {flex: 1;}
+        .location-info h3 {font-size: 1.5rem; color: #1e293b; margin-bottom: 0.5rem;}
+        .location-info p {color: #64748b;}
+        .location-time {text-align: center; color: #64748b;}
+        .location-time div:last-child {font-weight: bold; color: #1e293b; font-size: 1.2rem;}
+        
+        .alerts-section {
+            background: white;
+            border-radius: 1rem;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .alerts-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+        .alerts-title {display: flex; align-items: center; gap: 0.75rem;}
+        .alert-icon-header {width: 1.75rem; height: 1.75rem; color: #f59e0b;}
+        .alerts-title h3 {font-size: 1.5rem; color: #1e293b;}
+        .alert-count {
+            background: #dbeafe;
+            color: #1e40af;
+            padding: 0.5rem 1rem;
+            border-radius: 2rem;
+            font-weight: bold;
+            font-size: 0.9rem;
+        }
+        .alerts-empty {
+            text-align: center;
+            padding: 2rem;
+            color: #64748b;
+        }
+        .empty-icon svg {
+            width: 4rem;
+            height: 4rem;
+            color: #22c55e;
+            margin-bottom: 1rem;
+        }
+        .alerts-empty h4 {font-size: 1.25rem; margin-bottom: 0.5rem; color: #1e293b;}
+        .cloud-sync-info {
+            margin-top: 1.5rem;
+            padding: 1rem;
+            background: #f1f5f9;
+            border-radius: 0.5rem;
+            text-align: center;
+            color: #475569;
+            font-size: 0.9rem;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+        }
+        .stat-card {
+            background: white;
+            border-radius: 1rem;
+            padding: 1.5rem;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            text-align: center;
+            border-right: 4px solid;
+        }
+        .stat-card.green {border-color: #22c55e;}
+        .stat-card.blue {border-color: #3b82f6;}
+        .stat-card.purple {border-color: #a855f7;}
+        .stat-label {color: #64748b; font-size: 0.9rem; margin-bottom: 0.5rem;}
+        .stat-value {font-size: 2rem; font-weight: bold; color: #1e293b; margin-bottom: 0.5rem;}
+        .stat-description {color: #64748b; font-size: 0.85rem;}
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <div class="header-title">
+                <svg class="cloud-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5.002 5.002 0 10-9.78 2.096A4.001 4.001 0 003 15z"></path>
+                </svg>
+                
+            </div>
+            <h1>مبروكة على الإنترنت</h1>
+            <p>"أرغب في مراقبة مزرعتي... دون الذهاب إليها."</p>
+            <div class="header-status">
+                <div class="status-dot online" id="cloudStatusDot"></div>
+                <span id="cloudStatusText">اتصال السحابة: متصل ✅</span>
+            </div>
+        </div>
+
+        <!-- Connection Status -->
+        <div class="connection-card">
+            <div class="connection-content">
+                <div class="connection-text">
+                    <h3>👋 مرحبًا مبروكة!</h3>
+                    <p>يمكنك مراقبة مزرعتك من بيت جارتك أثناء شرب الشاي ☕</p>
+                </div>
+                <div class="connection-status">
+                    <svg class="wifi-icon active" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.111 16.404a5.5 5.5 0 017.778 0M12 20h.01m-7.08-7.071c3.904-3.905 10.236-3.905 14.141 0M1.394 9.393c5.857-5.857 15.355-5.857 21.213 0"></path>
+                    </svg>
+                    <div class="status-text">
+                        <div>الاتصال</div>
+                        <div style="opacity: 0.9;">✓ في الوقت الحقيقي</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Dashboard Grid -->
+        <div class="dashboard-grid">
+            <!-- Soil Moisture -->
+            <div class="metric-card moisture">
+                <div class="metric-header">
+                    <span class="metric-label">رطوبة التربة</span>
+                    <svg class="metric-icon" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.32 0z"></path>
+                    </svg>
+                </div>
+                <div class="metric-value" id="moisture">45.2%</div>
+                <div class="metric-status" id="moisture-status">✓ عادي</div>
+            </div>
+
+            <!-- Pump Status -->
+            <div class="metric-card pump" id="pump-card">
+                <div class="metric-header">
+                    <span class="metric-label">حالة المضخة</span>
+                    <svg class="metric-icon" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                    </svg>
+                </div>
+                <div class="metric-value" id="pump-status">⏸ متوقفة</div>
+                <div class="metric-status" id="pump-text">في الانتظار</div>
+            </div>
+
+            <!-- Water Tank Level -->
+            <div class="metric-card tank">
+                <div class="metric-header">
+                    <span class="metric-label">خزان المياه</span>
+                    <svg class="metric-icon" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.32 0z"></path>
+                    </svg>
+                </div>
+                <div class="metric-value" id="water-level">65.3%</div>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="water-progress" style="width: 65.3%;"></div>
+                </div>
+            </div>
+
+            <!-- Temperature -->
+            <div class="metric-card temperature">
+                <div class="metric-header">
+                    <span class="metric-label">درجة الحرارة</span>
+                    <span style="font-size: 1.5rem;">🌡️</span>
+                </div>
+                <div class="metric-value" id="temperature">26.8°C</div>
+                <div class="metric-status" id="temp-status">✓ طبيعية</div>
+            </div>
+        </div>
+
+        <!-- Location Card -->
+        <div class="location-card">
+            <div class="location-icon">
+                <svg fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm3.5-9c.83 0 1.5-.67 1.5-1.5S16.33 8 15.5 8 14 8.67 14 9.5s.67 1.5 1.5 1.5zm-7 0c.83 0 1.5-.67 1.5-1.5S9.33 8 8.5 8 7 8.67 7 9.5 7.67 11 8.5 11zm3.5 6.5c2.33 0 4.31-1.46 5.11-3.5H6.89c.8 2.04 2.78 3.5 5.11 3.5z"></path>
+                </svg>
+            </div>
+            <div class="location-info">
+                <h3>مزرعة مبروكة</h3>
+                <p>📍 زغوان، تونس • المحاصيل: طماطم، بصل، نعناع</p>
+            </div>
+            <div class="location-time">
+                <div>آخر تحديث</div>
+                <div id="last-update">14:35:22</div>
+            </div>
+        </div>
+
+        <!-- Alerts Section -->
+        <div class="alerts-section">
+            <div class="alerts-header">
+                <div class="alerts-title">
+                    <svg class="alert-icon-header" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.89 2 2 2zm6-6v-5c0-3.07-1.64-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.36C7.64 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z"></path>
+                    </svg>
+                    <h3>التنبيهات والإشعارات</h3>
+                </div>
+                <div class="alert-count" id="alert-count">0 نشطة</div>
+            </div>
+
+            <div id="alerts-container" class="alerts-empty">
+                <div class="empty-icon">
+                    <svg fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"></path>
+                    </svg>
+                </div>
+                <h4>كل شيء على ما يرام!</h4>
+                <p>لا توجد تنبيهات حاليًا. مزرعتك بصحة جيدة 🌱</p>
+            </div>
+
+            <div class="cloud-sync-info">
+                📊 البيانات المتزامنة: <span id="syncedReadings">0</span> قراءات | <span id="syncedOperations">0</span> عمليات
+            </div>
+        </div>
+
+        <!-- Stats Grid -->
+        <div class="stats-grid">
+            <div class="stat-card green">
+                <div class="stat-label">زمن الاستجابة</div>
+                <div class="stat-value">2.3ث</div>
+                <div class="stat-description">اتصال ممتاز</div>
+            </div>
+            <div class="stat-card blue">
+                <div class="stat-label">التحديثات</div>
+                <div class="stat-value">24/7</div>
+                <div class="stat-description">مراقبة مستمرة</div>
+            </div>
+            <div class="stat-card purple">
+                <div class="stat-label">التوافر</div>
+                <div class="stat-value">99.9%</div>
+                <div class="stat-description">تشغيل مضمون</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Simulation de données en temps réel
+        function updateTime() {
+            const now = new Date();
+            const timeStr = now.toLocaleTimeString('ar-TN');
+            document.getElementById('last-update').textContent = timeStr;
+        }
+
+        function simulateDataUpdates() {
+            // Mise à jour de l'humidité du sol
+            const moisture = (40 + Math.random() * 20).toFixed(1);
+            document.getElementById('moisture').textContent = moisture + '%';
+            
+            // Mise à jour de la température
+            const temp = (24 + Math.random() * 6).toFixed(1);
+            document.getElementById('temperature').textContent = temp + '°C';
+            
+            // Mise à jour du niveau d'eau
+            const waterLevel = (50 + Math.random() * 40).toFixed(1);
+            document.getElementById('water-level').textContent = waterLevel + '%';
+            document.getElementById('water-progress').style.width = waterLevel + '%';
+            
+            // Simulation aléatoire de l'état de la pompe
+            const pumpStates = [
+                {status: '⏸ متوقفة', text: 'في الانتظار'},
+                {status: '▶ تعمل', text: 'ري نشط'},
+                {status: '✓ مكتمل', text: 'اكتمل الري'}
+            ];
+            const randomState = pumpStates[Math.floor(Math.random() * pumpStates.length)];
+            document.getElementById('pump-status').textContent = randomState.status;
+            document.getElementById('pump-text').textContent = randomState.text;
+            
+            // Mise à jour des compteurs
+            const readings = Math.floor(Math.random() * 100) + 150;
+            const operations = Math.floor(Math.random() * 20) + 10;
+            document.getElementById('syncedReadings').textContent = readings;
+            document.getElementById('syncedOperations').textContent = operations;
+        }
+
+        // Mise à jour initiale
+        updateTime();
+        simulateDataUpdates();
+
+        // Mise à jour automatique toutes les 3 secondes
+        setInterval(updateTime, 1000);
+        setInterval(simulateDataUpdates, 3000);
+    </script>
+</body>
+</html>
